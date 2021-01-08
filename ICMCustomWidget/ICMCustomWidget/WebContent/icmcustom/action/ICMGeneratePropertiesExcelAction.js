@@ -195,7 +195,7 @@ define([
                             }
                             for (var l = 0; l < propData.items.length; l++) {
                                 var present = props.findIndex(function(a) {
-                                    return a.includes(propData.items[l].symbolicName)
+                                    return a.includes(propData.items[l].name)
                                 });
                                 if (present >= 0) {
                                     props[present] = propData.items[l].symbolicName;
@@ -355,7 +355,7 @@ define([
                                     {
                                         field: "sname",
                                         name: "Symbolic Name",
-                                        width: '120px',
+                                        width: '109px',
                                         height: '109px',
                                         editable: false
                                     },
@@ -432,22 +432,22 @@ define([
                                 for (var i = 0; i < items.length; i++) {
                                     if (store.getValue(items[i], "pname") && store.getValue(items[i], "sname")) {
                                         if (store.getValue(items[i], "isreq") == true && store.getValue(items[i], "dtype") == "datetime") {
-                                            temp += store.getValue(items[i], "sname");
+                                            temp += store.getValue(items[i], "pname");
                                             temp += " * (";
                                             temp += store.getValue(items[i], "dtype");
                                             temp += " mm/dd/yy)"
                                         } else if (store.getValue(items[i], "isreq") == true) {
-                                            temp += store.getValue(items[i], "sname");
+                                            temp += store.getValue(items[i], "pname");
                                             temp += " * ("
                                             temp += store.getValue(items[i], "dtype");
                                             temp += " )";
                                         } else if (store.getValue(items[i], "dtype") == "datetime") {
-                                            temp += store.getValue(items[i], "sname");
+                                            temp += store.getValue(items[i], "pname");
                                             temp += " ("
                                             temp += store.getValue(items[i], "dtype");
                                             temp += " mm/dd/yy)";
                                         } else {
-                                            temp += store.getValue(items[i], "sname");
+                                            temp += store.getValue(items[i], "pname");
                                             temp += " ("
                                             temp += store.getValue(items[i], "dtype");
                                             temp += " )";
@@ -473,11 +473,44 @@ define([
 
                             var wb = xlsx.utils.book_new();
 
-                            wb.SheetNames.push("Template", "Read Me");
+                            wb.SheetNames.push("Template", "Property Description", "Instructions");
                             var ws_data = [value];
                             var ws = xlsx.utils.aoa_to_sheet(ws_data);
                             wb.Sheets["Template"] = ws;
-
+                            var readMe = [
+                                          ['Columns with * notation are required'],
+                                          ['Do not leave empty cells'],
+                                          ['Follow the datatype for the properties which are denoted'],
+                                          ['Maximum number of rows per sheet is 50,000'],
+                                          ['If number of rows is more than 50,000 then create new template with rest of the property data'],
+                                          ['Do not skip rows']
+                                          ];
+                            var propertyDesc='[';
+                            var finalProps = {
+                            		items:[]
+                            };
+                            for (var k = 0; k < value.length; k++) {
+                                if (value[k].includes("*")) {
+                                	value[k] = value[k].replaceAll(/\* *\([^)]*\) */g, "").trim();    								
+        						}
+                                else
+                                	{
+                                	value[k] = value[k].replaceAll(/\([^)]*\) */g, "").trim();
+                                	}
+                            }
+                            for(var l=0;l<propData.items.length;l++){
+                            		if(value.includes(propData.items[l].name)){
+                                	finalProps.items.push(propData.items[l]);
+                                }
+                            }
+                            for(var len=0;len<finalProps.items.length;len++){
+                            	propertyDesc +='{"DisplayName": "'+finalProps.items[len].name+'","SymbolicName": "'+finalProps.items[len].symbolicName+'"},';
+                            }
+                            propertyDesc = propertyDesc.replace(/,\s*$/, "");
+                            propertyDesc+=']';
+                            var wsp = xlsx.utils.json_to_sheet(JSON.parse(propertyDesc));
+                            wb.Sheets["Property Description"] = wsp;
+                            wb.Sheets["Instructions"] = xlsx.utils.aoa_to_sheet(readMe);
                             var wbout = xlsx.write(wb, {
                                 bookType: 'xlsx',
                                 type: 'binary'

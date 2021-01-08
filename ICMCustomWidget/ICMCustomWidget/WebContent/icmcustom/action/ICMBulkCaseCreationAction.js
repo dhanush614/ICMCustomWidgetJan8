@@ -53,11 +53,13 @@ define([
                         type: 'binary'
                     });
                     var Sheet = workbook.SheetNames[0];
+                    var Sheet1 = workbook.SheetNames[1];
                     var excelRows = xlsx.utils.sheet_to_row_object_array(workbook.Sheets[Sheet]);
-                    this.createCaseMethod(excelRows);
+                    var excelRows1 = xlsx.utils.sheet_to_json(workbook.Sheets[Sheet1]);
+                    this.createCaseMethod(excelRows, excelRows1);
 
                 },
-                createCaseMethod: function(excelRows) {
+                createCaseMethod: function(excelRows, excelRows1) {
 
                     var solutionObj = ecm.model.desktop.currentSolution;
                     var excelKeyObj = [];
@@ -69,7 +71,7 @@ define([
                         var caseTypeValue = this.caseTypeDropDown.value;
                         if (caseTypeValue != null && caseTypeValue != "") {
 
-                            this.assignMetadataForCaseCreation(solutionObj, caseTypeValue, excelKeyObj, excelValObj, totalRowsLength);
+                            this.assignMetadataForCaseCreation(solutionObj, caseTypeValue, excelKeyObj, excelValObj, totalRowsLength, excelRows1);
                            
                         } else {
                             alert("Case Type is empty");
@@ -79,22 +81,26 @@ define([
                     }
 
                 },
-                assignMetadataForCaseCreation: function(solutionObj, caseTypeVal, excelKeyObj, excelValObj, totalRowsLength) {
-                    solutionObj.createNewCaseEditable(caseTypeVal, function(newCaseEditable) {
+                assignMetadataForCaseCreation: function(solutionObj, caseTypeVal, excelKeyObj, excelValObj, totalRowsLength, excelRows1) {
+                	solutionObj.createNewCaseEditable(caseTypeVal, function(newCaseEditable) {
                         for (var k = 0; k < excelKeyObj.length; k++) {
-                            var symbolicName = excelKeyObj[k];
+                            var propName = excelKeyObj[k];
                             var propVal = excelValObj[k];
-                            if (symbolicName.includes("*")) {
-                            	if(symbolicName.includes("datetime")){
+                            if (propName.includes("*")) {
+                            	if(propName.includes("datetime")){
                             		propVal = new Date(propVal);
                             	}
-                            	symbolicName = symbolicName.replaceAll(/\* *\([^)]*\) */g, "").trim();    								
+                            	propName = propName.replaceAll(/\* *\([^)]*\) */g, "").trim();    								
     						}
                             else
                             	{
-    							symbolicName = symbolicName.replaceAll("\([^)]*\) *", "").trim();
+                            	
+    							propName = propName.replaceAll(/\([^)]*\) */g, "").trim();
                             	}
-                            var casePropsHandler = newCaseEditable.propertiesCollection[symbolicName];
+                            	if(propName == excelRows1[k].DisplayName){
+                            	    propName = excelRows1[k].SymbolicName;
+                            	}
+                            var casePropsHandler = newCaseEditable.propertiesCollection[propName];
                             if (casePropsHandler != undefined) {
                                 casePropsHandler.setValue(propVal);
                             }
