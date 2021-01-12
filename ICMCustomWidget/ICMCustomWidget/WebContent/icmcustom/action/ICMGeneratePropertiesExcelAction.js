@@ -57,6 +57,7 @@ define([
             var reqProps = {
                 items: []
             };
+            var propsData = [];
             var folderPath = this.propertiesValue.folderPath;
             var documentClass = this.propertiesValue.docClass;
             var targetOS = this.propertiesValue.targetOS;
@@ -193,12 +194,18 @@ define([
                                     nonReqProps.items.push(propData.items[y]);
                                 }
                             }
+                            for (var k = 0; k < props.length; k++) {
+                                if (props[k].includes("*")) {
+                                	props[k] = props[k].replaceAll(/\* *\([^)]*\) */g, "").trim();    								
+        						}
+                                else
+                                	{
+                                	props[k] = props[k].replaceAll(/\([^)]*\) */g, "").trim();
+                                	}
+                            }
                             for (var l = 0; l < propData.items.length; l++) {
-                                var present = props.findIndex(function(a) {
-                                    return a.includes(propData.items[l].name)
-                                });
-                                if (present >= 0) {
-                                    props[present] = propData.items[l].symbolicName;
+                                if (props.includes(propData.items[l].name)) {
+                                    propsData.push(propData.items[l].symbolicName);
                                 }
                             }
                             var data = {
@@ -207,7 +214,7 @@ define([
                             };
                             var idVal = 0;
                             var myNewItem;
-                            if (props.length == 0) {
+                            if (propsData.length == 0) {
                                 for (var x = 0; x < reqProps.items.length; x++) {
                                     if (reqProps.items[x].dataType == "xs:timestamp") {
                                         myNewItem = {
@@ -231,12 +238,12 @@ define([
                                 }
                             } else {
                                 for (var x = 0; x < reqProps.items.length; x++) {
-                                    if (!props.includes(reqProps.items[x].symbolicName)) {
-                                        props.push(reqProps.items[x].symbolicName);
+                                    if (!propsData.includes(reqProps.items[x].symbolicName)) {
+                                        propsData.push(reqProps.items[x].symbolicName);
                                     }
                                 }
                                 for (var j = 0; j < propData.items.length; j++) {
-                                    if (props.includes(propData.items[j].symbolicName)) {
+                                    if (propsData.includes(propData.items[j].symbolicName)) {
                                         if (propData.items[j].dataType == "xs:timestamp") {
                                             myNewItem = {
                                                 id: ++idVal,

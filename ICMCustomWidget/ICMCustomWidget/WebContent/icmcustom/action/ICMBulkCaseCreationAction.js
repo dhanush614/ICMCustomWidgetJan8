@@ -55,23 +55,28 @@ define([
                     var Sheet = workbook.SheetNames[0];
                     var Sheet1 = workbook.SheetNames[1];
                     var excelRows = xlsx.utils.sheet_to_row_object_array(workbook.Sheets[Sheet]);
-                    var excelRows1 = xlsx.utils.sheet_to_json(workbook.Sheets[Sheet1]);
-                    this.createCaseMethod(excelRows, excelRows1);
+                    var excelRows1 = xlsx.utils.sheet_to_row_object_array(workbook.Sheets[Sheet1]);
+                    var descKeys = [];
+                    var descValues = [];
+                    for(var el=0;el<excelRows1.length;el++){
+                    	descKeys.push(excelRows1[el].DisplayName);
+                    	descValues.push(excelRows1[el].SymbolicName);
+                    }
+                    this.createCaseMethod(excelRows, descKeys, descValues);
 
                 },
-                createCaseMethod: function(excelRows, excelRows1) {
+                createCaseMethod: function(excelRows, descKeys, descValues) {
 
                     var solutionObj = ecm.model.desktop.currentSolution;
                     var excelKeyObj = [];
                     var excelValObj = [];
                     var totalRowsLength = excelRows.length;
                     for (var er = 0; er < excelRows.length; er++) {
-                        excelKeyObj = Object.keys(excelRows[er]);
+                    	excelKeyObj = Object.keys(excelRows[er]);
                         excelValObj = Object.values(excelRows[er]);
                         var caseTypeValue = this.caseTypeDropDown.value;
                         if (caseTypeValue != null && caseTypeValue != "") {
-
-                            this.assignMetadataForCaseCreation(solutionObj, caseTypeValue, excelKeyObj, excelValObj, totalRowsLength, excelRows1);
+                            this.assignMetadataForCaseCreation(solutionObj, caseTypeValue, excelKeyObj, excelValObj, totalRowsLength, descKeys, descValues);
                            
                         } else {
                             alert("Case Type is empty");
@@ -79,9 +84,8 @@ define([
                             uploadButtonId.destroy();
                         }
                     }
-
                 },
-                assignMetadataForCaseCreation: function(solutionObj, caseTypeVal, excelKeyObj, excelValObj, totalRowsLength, excelRows1) {
+                assignMetadataForCaseCreation: function(solutionObj, caseTypeVal, excelKeyObj, excelValObj, totalRowsLength, descKeys, descValues) {
                 	solutionObj.createNewCaseEditable(caseTypeVal, function(newCaseEditable) {
                         for (var k = 0; k < excelKeyObj.length; k++) {
                             var propName = excelKeyObj[k];
@@ -94,12 +98,10 @@ define([
     						}
                             else
                             	{
-                            	
     							propName = propName.replaceAll(/\([^)]*\) */g, "").trim();
                             	}
-                            	if(propName == excelRows1[k].DisplayName){
-                            	    propName = excelRows1[k].SymbolicName;
-                            	}
+                            	var propIndex = descKeys.indexOf(propName);
+                            	    propName = descValues[propIndex];
                             var casePropsHandler = newCaseEditable.propertiesCollection[propName];
                             if (casePropsHandler != undefined) {
                                 casePropsHandler.setValue(propVal);
