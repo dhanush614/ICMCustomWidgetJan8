@@ -196,11 +196,11 @@ define([
                             }
                             for (var k = 0; k < props.length; k++) {
                                 if (props[k].includes("*")) {
-                                	props[k] = props[k].replaceAll(/\* *\([^)]*\) */g, "").trim();    								
+                                	props[k] = props[k].replace(/\* *\([^)]*\) */g, "").trim();    								
         						}
                                 else
                                 	{
-                                	props[k] = props[k].replaceAll(/\([^)]*\) */g, "").trim();
+                                	props[k] = props[k].replace(/\([^)]*\) */g, "").trim();
                                 	}
                             }
                             for (var l = 0; l < propData.items.length; l++) {
@@ -498,11 +498,11 @@ define([
                             };
                             for (var k = 0; k < value.length; k++) {
                                 if (value[k].includes("*")) {
-                                	value[k] = value[k].replaceAll(/\* *\([^)]*\) */g, "").trim();    								
+                                	value[k] = value[k].replace(/\* *\([^)]*\) */g, "").trim();    								
         						}
                                 else
                                 	{
-                                	value[k] = value[k].replaceAll(/\([^)]*\) */g, "").trim();
+                                	value[k] = value[k].replace(/\([^)]*\) */g, "").trim();
                                 	}
                             }
                             for(var l=0;l<propData.items.length;l++){
