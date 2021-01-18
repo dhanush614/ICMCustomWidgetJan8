@@ -57,6 +57,7 @@ define([
             var reqProps = {
                 items: []
             };
+            var clickCount = 400;
             var propsData = [];
             var folderPath = this.propertiesValue.folderPath;
             var documentClass = this.propertiesValue.docClass;
@@ -283,8 +284,13 @@ define([
                                     isreq: "",
                                     dtype: ""
                                 };
-                                store.newItem(myNewItem);
+                                store.newItem(myNewItem);                                
+                                var lastRow = grid.store._arrayOfAllItems.length - 1;
+                                //grid.scrollToRow(lastRow);
+                                grid.scrollTo(clickCount);
+                                clickCount+=50;
                             });
+                            
                             var remnode = dom.byId("remButton");
                             on(remnode, "click", function() {
                                 var items = grid.selection.getSelected();
@@ -310,7 +316,7 @@ define([
                                 cells: [
                                     new dojox.grid.cells.RowIndex({
                                         name: "S.No",
-                                        width: '30px'
+                                        width: '35px'
                                     }),
 
                                     {
@@ -356,27 +362,27 @@ define([
                                             }
                                         },
                                         searchAttr: "id",
-                                        width: '109px',
+                                        width: '132px',
                                         editable: true
                                     },
                                     {
                                         field: "sname",
                                         name: "Symbolic Name",
-                                        width: '109px',
+                                        width: '132px',
                                         height: '109px',
                                         editable: false
                                     },
                                     {
                                         field: "isreq",
                                         name: "isRequired? <span style='color:red;'>*</span>",
-                                        width: '109px',
+                                        width: '132px',
                                         height: '109px',
                                         editable: false
                                     },
                                     {
                                         field: "dtype",
                                         name: "DataType",
-                                        width: '109px',
+                                        width: '132px',
                                         height: '109px',
                                         editable: false
                                     },
@@ -399,7 +405,8 @@ define([
                                         return false;
                                     }
                                 },
-                                rowSelector: '20px'
+                                rowSelector: '20px',
+                                rowsPerPage: 200
                             });
                             grid.placeAt("gridDiv");
                             grid.setSortIndex(3, false);
@@ -661,48 +668,23 @@ define([
                     });
                     initiateTaskDialog1.setTitle(caseTypeValue);
                     initiateTaskDialog1.getCaseTypePropData();
-                    // initiateTaskDialog1.setSize(600, 500);
                     initiateTaskDialog1.addButton("Save Template", initiateTaskDialog1.onSave, false, false);
-                    //initiateTaskDialog1.setResizable(true);
-
-
-                    initiateTaskDialog1.setResizable(false);
-                    initiateTaskDialog1.setSizeToViewportRatio(false);
-                    initiateTaskDialog1._setSizeToViewportRatio = false;
-                    initiateTaskDialog1._lockFullscreen = true;
-                    initiateTaskDialog1.setMaximized(false);
+                    initiateTaskDialog1.setResizable(true);
                     initiateTaskDialog1.setSize(700, 500);
-                    initiateTaskDialog1.fitContentArea = true;
-                    initiateTaskDialog1.show();
-
-                    require(["dojo/aspect", "dojo/_base/lang"], function(aspect, lang) {
-
-                        aspect.after(initiateTaskDialog1, "resize", lang.hitch(this, function() {
-                            if (grid) {
-                                grid.resize({
-                                    w: 800,
-                                    h: 450
-                                }, {
-                                    w: 800,
-                                    h: 450
-                                });
-                            }
-                        }), true);
-                    });
-                    //initiateTaskDialog1.resize();
+                    initiateTaskDialog1.show();                   
 
                 },
 
                 buildHtmlTemplate1: function() {
-                    var htmlstring1 = '<div style="width: 600px; height: 300px;"><div data-dojo-type="dijit/layout/TabContainer" style="width: 100%; height: 100%;">' +
-                        '<div id="gridDiv" data-dojo-type="dijit/layout/ContentPane" title="Properties" ></div>' +
-                        '</div></div>' +
+                    var htmlstring1 = '<div><div data-dojo-type="dijit/layout/TabContainer" style="width: 671px; height: 310px;">' +
+                        '<div style="width: 671px; height: 310px;" id="gridDiv" data-dojo-type="dijit/layout/ContentPane" title="Properties" ></div>' +
+                        '</div>' +
                         '<div class="pvrPropertyTable" id="toolBar1"><div class="pvrPropertyTableGrid" data-dojo-attach-point="_gridNode"></div>' +
                         '<div class="pvrPropertyTableToolbar pvrGridToolbar" data-dojo-type="dijit/Toolbar"  data-dojo-attach-point="_toolbar">' +
                         '<div data-dojo-type="dijit/form/Button" data-dojo-attach-point="_addButton" id="addButton"' +
-                        'data-dojo-props="iconClass:\'addButton\', showLabel:false" <!--data-dojo-attach-event="onClick: _onClickAdd"-->>add</div>' +
+                        'data-dojo-props="iconClass:\'addButton\', showLabel:false">add</div>' +
                         '<div data-dojo-type="dijit/form/Button" data-dojo-attach-point="_removeButton" id="remButton"' +
-                        'data-dojo-props="iconClass:\'removeButton\', showLabel:false">remove</div></div></div>';
+                        'data-dojo-props="iconClass:\'removeButton\', showLabel:false">remove</div></div></div></div>';
                     return htmlstring1;
                 }
 
