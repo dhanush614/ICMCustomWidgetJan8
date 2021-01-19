@@ -98,6 +98,9 @@ define([
     						}
                             else
                             	{
+                            	if(propName.includes("datetime")){
+                            		propVal = new Date(propVal);
+                            	}
     							propName = propName.replace(/\([^)]*\) */g, "").trim();
                             	}
                             	var propIndex = descKeys.indexOf(propName);
