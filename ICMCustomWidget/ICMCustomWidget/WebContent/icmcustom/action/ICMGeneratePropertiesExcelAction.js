@@ -494,6 +494,7 @@ define([
                             var readMe = [
                                           ['Columns with * notation are required'],
                                           ['Do not leave empty cells'],
+                                          ['Do not leave empty rows'],
                                           ['Follow the datatype for the properties which are denoted'],
                                           ['Maximum number of rows per sheet is 50,000'],
                                           ['If number of rows is more than 50,000 then create new template with rest of the property data'],

@@ -38,7 +38,8 @@ public class ICMCustomPlugin extends Plugin {
 			new com.ibm.icm.custom.plugin.actions.ICMBulkUploadAction(),
 			new com.ibm.icm.custom.plugin.actions.ICMGeneratePropertiesExcelAction(),
 			new com.ibm.icm.custom.plugin.actions.ICMDownloadTemplate(),
-			new com.ibm.icm.custom.plugin.actions.ICMBulkCaseCreationAction()
+			new com.ibm.icm.custom.plugin.actions.ICMBulkCaseCreationAction(),
+			new com.ibm.icm.custom.plugin.actions.ICMSearchExportAction()
 		};
 	}
 
